@@ -28,6 +28,18 @@ class Vagrant(val name: String, val path: File, val id: String, val readme: Stri
 		out.close
 	}
 
+	def restart(out: OutputStream) = {		
+				import sys.process._
+		val pio = new ProcessIO(_ => (),
+                        stdout => scala.io.Source.fromInputStream(stdout).getLines.foreach(a => {out.write(("\n" + a).getBytes); out.flush}),
+                        _ => ())
+		
+		out.write((LogStuff.top1+"Restarting"+LogStuff.top2+"Restarting"+LogStuff.top3).getBytes)
+		val ret = (sys.process.Process(Seq( "vagrant", "reload" ), path) run pio).exitValue
+		out.write(LogStuff.bottom.getBytes)
+		out.close
+	}
+
 	def pause(out: OutputStream) = {		
 				import sys.process._
 		val pio = new ProcessIO(_ => (),
@@ -35,7 +47,6 @@ class Vagrant(val name: String, val path: File, val id: String, val readme: Stri
                         _ => ())
 		out.write((LogStuff.top1+"Pausing"+LogStuff.top2+"Pausing"+LogStuff.top3).getBytes)
 		val ret = (sys.process.Process(Seq( "vagrant", "suspend" ), path) run pio).exitValue
-		out.write("I'm Rich BITCH!".getBytes)
 		out.write(LogStuff.bottom.getBytes)
 		out.close
 	}
@@ -86,6 +97,9 @@ object Vagrant {
 		})
 	}
 }
+
+
+object VagrantOrdering extends Ordering[Vagrant] { def compare(o1: Vagrant, o2: Vagrant) = if (o2.running && !o1.running) {1} else if (!o2.running && o1.running) {-1} else {0}}
 
 
 object LogStuff {

@@ -13,7 +13,7 @@ object Application extends Controller {
   	}
 
   	Vagrant.getRunning;
-  	Ok(views.html.index(Vagrant.boxes))
+  	Ok(views.html.index(Vagrant.boxes.sorted(VagrantOrdering)))
   }
 
   def start(box: String) = Action {
@@ -29,9 +29,21 @@ object Application extends Controller {
   }
 
   def stop(box: String) = Action {
+    val enumerator = Enumerator.outputStream { os =>
+    Vagrant.boxes.find(a => a.name == box) match {
+      case Some(a) => a.stop(os) 
+      case None    => os.close 
+    }
+    }
+    Ok.stream(enumerator >>> Enumerator.eof).withHeaders(
+      "Content-Type"->"text/html"
+    )
+  }
+
+  def restart(box: String) = Action {
   	val enumerator = Enumerator.outputStream { os =>
 		Vagrant.boxes.find(a => a.name == box) match {
-			case Some(a) => a.stop(os) 
+			case Some(a) => a.restart(os) 
 			case None 	 => os.close 
 		}
     }

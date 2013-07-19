@@ -6,6 +6,7 @@
 GET     /                           controllers.Application.index
 GET     /start/:box                 controllers.Application.start(box: String)
 GET     /stop/:box                  controllers.Application.stop(box: String)
+GET     /restart/:box               controllers.Application.restart(box: String)
 GET     /pause/:box                 controllers.Application.pause(box: String)
 
 # Map static resources from the /public folder to the /assets URL path

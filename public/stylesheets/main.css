@@ -5,15 +5,7 @@
 }
 
 .huge {
-	font-size: 4rem;
-}
-
-.icon-stop.huge {
-	color: red;
-}
-
-.icon-play.huge {
-	color: lime;
+	font-size: 3rem;
 }
 
 .status {

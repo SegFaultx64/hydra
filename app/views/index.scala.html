@@ -11,9 +11,9 @@
     				@if(box.running) {
 	    				<i class="icon-play huge"></i><br>
 	    				<div class="state">Running</div>
-	    				<a href="/stop/@box.name"><i class="icon-stop"></i></a>&nbsp;&nbsp;&nbsp;<a href="/pause/@box.name"><i class="icon-pause"></i></a>
+	    				<a href="/stop/@box.name"><i class="icon-power-off"></i></a>&nbsp;&nbsp;<a href="/pause/@box.name"><i class="icon-moon"></i></a>&nbsp;&nbsp;<a href="/restart/@box.name"><i class="icon-undo"></i></a>
     				} else {
-	    				<i class="icon-stop huge"></i><br>
+	    				<i class="icon-power-off huge"></i><br>
 	    				<div class="state">Stopped</div>
 	    				<a href="/start/@box.name"><i class="icon-play"></i></a>
     				}

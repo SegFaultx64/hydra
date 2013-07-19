@@ -1,0 +1,34 @@
+@import url("http://fonts.googleapis.com/css?family=Lato:400,700,900,400italic");
+
+* {
+	font-family: Lato;
+}
+
+.huge {
+	font-size: 4rem;
+}
+
+.icon-stop.huge {
+	color: red;
+}
+
+.icon-play.huge {
+	color: lime;
+}
+
+.status {
+	font-size: 2rem;
+	font-weight: bold;
+	text-align: center;
+	padding-left: 10px;
+	border-left: 1px solid #ddd;
+}
+
+.status a:hover {
+	text-decoration: none;
+}
+
+.state {
+	margin-bottom: 15px;
+	margin-top: 5px;
+}

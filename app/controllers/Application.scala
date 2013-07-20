@@ -7,16 +7,24 @@ import play.api.libs.iteratee._
 
 object Application extends Controller {
   
-  def index = Action {
-  	if(Vagrant.boxes.isEmpty) {
-  		Vagrant.loadBoxes(new java.io.File(System.getProperty("user.home") + "/workspace/"))
-  	}
+  def index = Action { implicit request =>
+    if(Vagrant.boxes.isEmpty) {
+      Vagrant.loadBoxes(new java.io.File(System.getProperty("user.home") + "/workspace/"))
+    }
 
-  	Vagrant.getRunning;
-  	Ok(views.html.index(Vagrant.boxes.sorted(VagrantOrdering)))
+    Vagrant.getRunning;
+    Ok(views.html.index(Vagrant.boxes.sorted(VagrantOrdering)))
+  }  
+
+  def setPassword = Action(parse.urlFormEncoded) { implicit request =>
+    // general.Config.password = pass
+    general.Config.password = request.body("password")(0)
+    Redirect("/").flashing(
+      "success" -> "Set password!"
+    )
   }
 
-  def start(box: String) = Action {
+  def start(box: String) = Action { implicit request =>
   	val enumerator = Enumerator.outputStream { os =>
 		Vagrant.boxes.find(a => a.name == box) match {
 			case Some(a) => a.start(os) 
@@ -28,7 +36,7 @@ object Application extends Controller {
     )
   }
 
-  def stop(box: String) = Action {
+  def stop(box: String) = Action { implicit request =>
     val enumerator = Enumerator.outputStream { os =>
     Vagrant.boxes.find(a => a.name == box) match {
       case Some(a) => a.stop(os) 
@@ -40,7 +48,7 @@ object Application extends Controller {
     )
   }
 
-  def restart(box: String) = Action {
+  def restart(box: String) = Action { implicit request =>
   	val enumerator = Enumerator.outputStream { os =>
 		Vagrant.boxes.find(a => a.name == box) match {
 			case Some(a) => a.restart(os) 
@@ -52,7 +60,7 @@ object Application extends Controller {
     )
   }
 
-  def pause(box: String) = Action {
+  def pause(box: String) = Action { implicit request =>
   	val enumerator = Enumerator.outputStream { os =>
 		Vagrant.boxes.find(a => a.name == box) match {
 			case Some(a) => a.pause(os) 

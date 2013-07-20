@@ -1,9 +1,25 @@
-@(boxx: List[boxes.Vagrant])
+@(boxx: List[boxes.Vagrant])(implicit flash: Flash)
 
 @main("Welcome to Play 2.1") {
 	<div class="page-header">
 		<h1>Boxes</h1>
 	</div>
+    @if(general.Config.password == "") {
+        <div class="row">
+            <div class="span10 offset1 well">
+                <div class="alert alert-error">
+                    You have not entered your password so the host file cannot be modified.
+                </div>
+                @helper.form(action = routes.Application.setPassword, 'class -> "form-inline") {
+                    
+                    <label for="password">Password: </labe>
+                    <input type="password" name="password">
+                    <input type="submit" name="submit" class="btn">
+                    
+                }
+            </div>
+        </div>
+    }
     <div class="row">
 	    @for(box <- boxx) {    
     		<div class="well span12">
@@ -18,7 +34,11 @@
 	    				<a href="/start/@box.name"><i class="icon-play"></i></a>
     				}
     			</span>
-    			<h2>@box.name</h2>
+                @if(box.running) {
+                    <h2><a href="http://@box.url/" target="_blank">@box.name</a></h2>
+                } else {
+                    <h2>@box.name</h2>
+                }
     			<h3>Located At: @box.path</h3>
     			Virtual Box Id: @box.id
     			<hr>

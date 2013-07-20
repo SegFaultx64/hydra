@@ -4,6 +4,10 @@
 	font-family: Lato;
 }
 
+.alerts-holder {
+	margin-top: 15px;
+}
+
 .huge {
 	font-size: 3rem;
 }

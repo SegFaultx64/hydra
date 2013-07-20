@@ -1,8 +1,34 @@
 package boxes
 import java.io._
 
-class Vagrant(val name: String, val path: File, val id: String, val readme: String, var running: Boolean = false) {
+class Vagrant(val name: String, val path: File, val id: String, val readme: String, val ip: String, var running: Boolean = false) {
 	override def toString(): String =  "Vagrant: " + name + " / Path: " + path 
+	val url = name + ".devBox"
+
+	def setHostEntry(on: Boolean) = {
+		import sys.process._
+		/*
+		This is an awful fucking solution to the fact that we need to acces the host file as root. Never ever do anything like this. If you do you are literally Hitler.
+		Nothing sensible solves this problem so we had to do it the terrible way.
+		This is a list of other ways I tried to solve this:
+
+		Just pipe the password into sudo
+		Use an output stream to pass the password into the echo
+		screen shennanigans
+
+		None of these work. Scala's odd proccess handling thwarts them all
+		*/
+		val pass = general.Config.password
+		val fw = new FileWriter(("./test.sh"), false)
+		if (on) {
+			fw.write(s"""echo $pass | sudo -S sh -c 'echo "\n$ip $url" >> /etc/hosts'""")
+		} else {
+			fw.write(s"""echo $pass | sudo -S sh -c 'sed -i -e "/$ip $url/d" /etc/hosts'""")
+		}
+		fw.close()
+		"sh ./test.sh" !!;
+		(new File("./test.sh")).delete
+	}
 
 	def start(out: OutputStream) = {		
 		import sys.process._
@@ -14,6 +40,7 @@ class Vagrant(val name: String, val path: File, val id: String, val readme: Stri
 		val ret = (sys.process.Process(Seq( "vagrant", "up" ), path) run pio).exitValue
 		out.write(LogStuff.bottom.getBytes)
 		out.close
+		setHostEntry(true)
 	}
 
 	def stop(out: OutputStream) = {		
@@ -26,6 +53,7 @@ class Vagrant(val name: String, val path: File, val id: String, val readme: Stri
 		val ret = (sys.process.Process(Seq( "vagrant", "halt" ), path) run pio).exitValue
 		out.write(LogStuff.bottom.getBytes)
 		out.close
+		setHostEntry(false)
 	}
 
 	def restart(out: OutputStream) = {		
@@ -49,6 +77,7 @@ class Vagrant(val name: String, val path: File, val id: String, val readme: Stri
 		val ret = (sys.process.Process(Seq( "vagrant", "suspend" ), path) run pio).exitValue
 		out.write(LogStuff.bottom.getBytes)
 		out.close
+		setHostEntry(false)
 	}
 	
 }
@@ -68,8 +97,26 @@ object Vagrant {
 		.foreach(a => {
 			a._1 match {
 				case Some(b) => {
+					val ipRegex = "config.vm.network :private_network, ip: \"(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\"".r
 					val id = scala.io.Source.fromFile(b).mkString
 					val readmeFile = new File(a._2.toString + "/README.md")
+					val vagrantFile = new File(a._2.toString + "/VagrantFile")
+					val vagrantConfig = scala.io.Source.fromFile(vagrantFile).mkString
+					val ip = ipRegex.findFirstIn(vagrantConfig) match {
+						case Some(c) => c.drop(41).dropRight(1)
+						case None => {
+							val backup = new FileWriter((a._2.toString + "/VagrantFile.old"), true)
+							backup.write(vagrantConfig)
+							val fw = new FileWriter((a._2.toString + "/VagrantFile"), true)
+							fw.write("""
+								Vagrant.configure("2") do |config|
+									config.vm.network :private_network, ip: "192.168.33.100"
+								end
+							""")
+							fw.close()
+							"192.168.33.100"
+						}
+					}
 					val readme = if(readmeFile.exists) {
 						import eu.henkelmann.actuarius.ActuariusTransformer
 						val transformer = new ActuariusTransformer()
@@ -77,7 +124,7 @@ object Vagrant {
 					} else {
 						""
 					}
-					Vagrant.boxes = new Vagrant(a._2.getName, a._2, id, readme) :: boxes
+					Vagrant.boxes = new Vagrant(a._2.getName, a._2, id, readme, ip) :: boxes
 				}
 				case None => {} 
 			}

@@ -1,4 +1,4 @@
-@(title: String)(content: Html)
+@(title: String)(content: Html)(implicit flash: Flash)
 
 <!DOCTYPE html>
 
@@ -14,6 +14,18 @@
     </head>
     <body>
         <div class="container">
+            <div class="row span12 alerts-holder">
+                @if(flash.get("success").getOrElse("") != "" && flash.get("error").getOrElse("") == "") {
+                    <div class="alert alert-success">
+                        @flash.get("success").getOrElse("")
+                    </div>
+                }
+                @if(flash.get("error").getOrElse("") != "") {
+                    <div class="alert alert-error">
+                        @flash.get("error").getOrElse("")
+                    </div>
+                }
+            </div>
         	@content
         </div>
     </body>

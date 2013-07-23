@@ -19,6 +19,7 @@ object Application extends Controller {
   def setPassword = Action(parse.urlFormEncoded) { implicit request =>
     // general.Config.password = pass
     general.Config.password = request.body("password")(0)
+    (new Play("devboxtest", new java.io.File("/"), "", "9000")).foward()
     Redirect("/").flashing(
       "success" -> "Set password!"
     )

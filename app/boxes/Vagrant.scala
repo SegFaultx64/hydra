@@ -2,32 +2,16 @@ package boxes
 import java.io._
 
 class Vagrant(val name: String, val path: File, val id: String, val readme: String, val ip: String, var running: Boolean = false) {
+
 	override def toString(): String =  "Vagrant: " + name + " / Path: " + path 
-	val url = name + ".devBox"
 
 	def setHostEntry(on: Boolean) = {
-		import sys.process._
-		/*
-		This is an awful fucking solution to the fact that we need to acces the host file as root. Never ever do anything like this. If you do you are literally Hitler.
-		Nothing sensible solves this problem so we had to do it the terrible way.
-		This is a list of other ways I tried to solve this:
 
-		Just pipe the password into sudo
-		Use an output stream to pass the password into the echo
-		screen shennanigans
-
-		None of these work. Scala's odd proccess handling thwarts them all
-		*/
-		val pass = general.Config.password
-		val fw = new FileWriter(("./test.sh"), false)
 		if (on) {
-			fw.write(s"""echo $pass | sudo -S sh -c 'echo "\n$ip $url" >> /etc/hosts'""")
+			general.Config.sudoWrite(s"""echo "\n$ip $url" >> /etc/hosts""")
 		} else {
-			fw.write(s"""echo $pass | sudo -S sh -c 'sed -i -e "/$ip $url/d" /etc/hosts'""")
+			general.Config.sudoWrite(s"""sed -i -e "/$ip $url/d" /etc/hosts""")
 		}
-		fw.close()
-		"sh ./test.sh" !!;
-		(new File("./test.sh")).delete
 	}
 
 	def start(out: OutputStream) = {		

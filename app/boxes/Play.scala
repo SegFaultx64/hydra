@@ -2,14 +2,14 @@ package boxes
 import java.io._
 
 class Play(val name: String, val path: File, val readme: String, val port: String, var running: Boolean = false) {
-	val url = name + ".devBox"
+	val url = name + ".hydra"
 
 	val config = s"""
 
 <VirtualHost *:80>
   ServerAdmin none@none.none
   DocumentRoot "/usr/docs"
-  ServerName url
+  ServerName $url
 
   ProxyRequests Off
   ProxyVia Off
@@ -20,7 +20,11 @@ class Play(val name: String, val path: File, val readme: String, val port: Strin
 	"""
 
 	def foward() = {
-		general.Config.sudoWrite(s"""echo "$config" >> /private/etc/apache2/other/proxy.conf""")
+		general.Config.sudoWrite(s"""echo "$config" >> /private/etc/apache2/other/$url.conf""")
+		general.Config.sudoWrite(s"""apachectl restart""")
+	}
+	def unfoward() = {
+		general.Config.sudoWrite(s"""rm /private/etc/apache2/other/$url.conf""")
 		general.Config.sudoWrite(s"""apachectl restart""")
 	}
 }

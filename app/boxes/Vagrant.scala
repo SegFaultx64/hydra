@@ -5,6 +5,8 @@ class Vagrant(val name: String, val path: File, val id: String, val readme: Stri
 
 	override def toString(): String =  "Vagrant: " + name + " / Path: " + path 
 
+	val url = name + ".hydra"
+
 	def setHostEntry(on: Boolean) = {
 
 		if (on) {

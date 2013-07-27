@@ -12,8 +12,13 @@ object Application extends Controller {
       Vagrant.loadBoxes(new java.io.File(System.getProperty("user.home") + "/workspace/"))
     }
 
+    if(boxes.Play.boxes.isEmpty) {
+      boxes.Play.loadBoxes(new java.io.File(System.getProperty("user.home") + "/workspace/"))
+    }
+
+    boxes.Play.getRunning;
     Vagrant.getRunning;
-    Ok(views.html.index(Vagrant.boxes.sorted(VagrantOrdering)))
+    Ok(views.html.index(Vagrant.boxes.sorted(VagrantOrdering), boxes.Play.boxes))
   }  
 
   def setPassword = Action(parse.urlFormEncoded) { implicit request =>
@@ -29,7 +34,12 @@ object Application extends Controller {
   	val enumerator = Enumerator.outputStream { os =>
 		Vagrant.boxes.find(a => a.name == box) match {
 			case Some(a) => a.start(os) 
-			case None 	 => os.close 
+			case None 	 => {
+        boxes.Play.boxes.find(b => b.name == box) match {
+          case Some(b) => b.start(os)
+          case None    => os.close 
+        } 
+      }
 		}
     }
   	Ok.stream(enumerator >>> Enumerator.eof).withHeaders(
@@ -41,7 +51,12 @@ object Application extends Controller {
     val enumerator = Enumerator.outputStream { os =>
     Vagrant.boxes.find(a => a.name == box) match {
       case Some(a) => a.stop(os) 
-      case None    => os.close 
+      case None    => {
+        boxes.Play.boxes.find(b => b.name == box) match {
+          case Some(b) => b.stop(os)
+          case None    => os.close 
+        } 
+      }
     }
     }
     Ok.stream(enumerator >>> Enumerator.eof).withHeaders(
@@ -53,7 +68,12 @@ object Application extends Controller {
   	val enumerator = Enumerator.outputStream { os =>
 		Vagrant.boxes.find(a => a.name == box) match {
 			case Some(a) => a.restart(os) 
-			case None 	 => os.close 
+			case None 	 => {
+        boxes.Play.boxes.find(b => b.name == box) match {
+          case Some(b) => b.restart(os)
+          case None    => os.close 
+        } 
+      }
 		}
     }
   	Ok.stream(enumerator >>> Enumerator.eof).withHeaders(

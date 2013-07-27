@@ -1,4 +1,4 @@
-@(boxx: List[boxes.Vagrant])(implicit flash: Flash)
+@(boxx: List[boxes.Vagrant], playBoxes: List[boxes.Play])(implicit flash: Flash)
 
 @main("Welcome to Hydra Box") {
 	<div class="page-header">
@@ -21,13 +21,40 @@
         </div>
     }
     <div class="row">
-	    @for(box <- boxx) {    
+        @for(box <- boxx) {    
+            <div class="well span12">
+                <span class="status pull-right">
+                    @if(box.running) {
+                        <i class="icon-play huge"></i><br>
+                        <div class="state">Running</div>
+                        <a href="/stop/@box.name"><i class="icon-power-off"></i></a>&nbsp;&nbsp;<a href="/pause/@box.name"><i class="icon-moon"></i></a>&nbsp;&nbsp;<a href="/restart/@box.name"><i class="icon-undo"></i></a>
+                    } else {
+                        <i class="icon-power-off huge"></i><br>
+                        <div class="state">Stopped</div>
+                        <a href="/start/@box.name"><i class="icon-play"></i></a>
+                    }
+                </span>
+                @if(box.running) {
+                    <h2><a href="http://@box.url/" target="_blank">@box.name</a></h2>
+                } else {
+                    <h2>@box.name</h2>
+                }
+                <h3>Located At: @box.path</h3>
+                Virtual Box Id: @box.id
+                <hr>
+                <h3><a href="javascript:$('#Readme@box.name').toggle()">Readme</a></h3>
+                <span id="Readme@box.name" class="hide">
+                    @Html(box.readme)
+                </span>
+            </div>
+        }
+	    @for(box <- playBoxes) {    
     		<div class="well span12">
     			<span class="status pull-right">
     				@if(box.running) {
 	    				<i class="icon-play huge"></i><br>
 	    				<div class="state">Running</div>
-	    				<a href="/stop/@box.name"><i class="icon-power-off"></i></a>&nbsp;&nbsp;<a href="/pause/@box.name"><i class="icon-moon"></i></a>&nbsp;&nbsp;<a href="/restart/@box.name"><i class="icon-undo"></i></a>
+	    				<a href="/stop/@box.name"><i class="icon-power-off"></i></a>&nbsp;&nbsp;<a href="/restart/@box.name"><i class="icon-undo"></i></a>
     				} else {
 	    				<i class="icon-power-off huge"></i><br>
 	    				<div class="state">Stopped</div>
@@ -40,7 +67,6 @@
                     <h2>@box.name</h2>
                 }
     			<h3>Located At: @box.path</h3>
-    			Virtual Box Id: @box.id
     			<hr>
     			<h3><a href="javascript:$('#Readme@box.name').toggle()">Readme</a></h3>
     			<span id="Readme@box.name" class="hide">

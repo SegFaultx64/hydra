@@ -15,15 +15,17 @@ object ApplicationBuild extends Build {
 
 
   val main = play.Project(appName, appVersion, appDependencies).settings(
-    // Add your own project settings here   
+    // Add your own project settings here
+  ).settings(
+    // Added by Hydra
     playOnStopped := List(() => {
-      (new java.io.File("./PlayState")).delete
+      (new java.io.File("./RUNNING_PID")).delete
     }),
     playOnStarted := List((s: { def toString: String }) => {
       java.lang.management.ManagementFactory.getRuntimeMXBean.getName.split('@').headOption.map { pid =>
-        val fw2 = new java.io.FileWriter(("./PlayState"), false)
-        fw2.write(pid)
-        fw2.close()
+        val fw = new java.io.FileWriter(("./RUNNING_PID"), false)
+        fw.write(pid)
+        fw.close()
       }
     })
   )

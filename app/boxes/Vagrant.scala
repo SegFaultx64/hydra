@@ -154,5 +154,5 @@ object LogStuff {
 						<h1>"""
 	val top3 ="""</h1></div><div class="row"><pre>"""
 	val bottom ="""
-	Done . . . Redirecting</pre></body><meta http-equiv="refresh" content="1; url=/"></html>"""
+	Done . . . Redirecting</pre></body><meta http-equiv="refresh" content="10; url=/"></html>"""
 }

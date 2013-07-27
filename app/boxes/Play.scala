@@ -1,9 +1,7 @@
 package boxes
 import java.io._
 
-class Play(val name: String, val path: File, val readme: String, val port: String, var running: Boolean = false) {
-	val url = name + ".hydra"
-
+class Play(override val name: String, override val path: File, override val readme: String, val port: String, override val ip: String) extends Box(name, path, readme, ip) {
 	val config = s"""
 <VirtualHost *:80>
   ServerAdmin none@none.none
@@ -27,15 +25,7 @@ class Play(val name: String, val path: File, val readme: String, val port: Strin
 		general.Config.sudoWrite(s"""apachectl restart""")
 	}
 
-	def setHostEntry(on: Boolean) = {
-		if (on) {
-			general.Config.sudoWrite(s"""echo "\n127.0.0.1 $url" >> /etc/hosts""")
-		} else {
-			general.Config.sudoWrite(s"""sed -i -e "/127.0.0.1 $url/d" /etc/hosts""")
-		}
-	}
-
-	def start(out: OutputStream) = {		
+	override def start(out: OutputStream) = {		
 		import sys.process._
 		val pio = new ProcessIO(_ => (),
                         stdout => scala.io.Source.fromInputStream(stdout).getLines.foreach(a => {out.write(("\n" + a).getBytes); out.flush}),
@@ -44,12 +34,12 @@ class Play(val name: String, val path: File, val readme: String, val port: Strin
 		out.write((LogStuff.top1+"Starting"+LogStuff.top2+"Starting"+LogStuff.top3).getBytes)
 		(sys.process.Process(Seq( "play", s"""run $port &""" ), path) run pio)
 		out.write(LogStuff.bottom.getBytes)
-		setHostEntry(true)
-		foward
 		out.close
+		foward
+		setHostEntry(true)
 	}
 
-	def stop(out: OutputStream) = {		
+	override def stop(out: OutputStream) = {		
 		out.write((LogStuff.top1+"Stopping"+LogStuff.top2+"Stopping"+LogStuff.top3).getBytes)
 		val playFile = new File(this.path + "/RUNNING_PID")
 		if (playFile.exists) {
@@ -63,7 +53,7 @@ class Play(val name: String, val path: File, val readme: String, val port: Strin
 		setHostEntry(false)
 	}
 
-	def restart(out: OutputStream) = {		
+	override def restart(out: OutputStream) = {		
 		stop(out)
 		start(out)
 	}
@@ -110,7 +100,15 @@ object Play {
 						fw.write(newBuildConfig)
 						fw.close()
 					}
-					Play.boxes = new Play(a._2.getName, a._2, "", "9050") :: boxes
+					val readmeFile = new File(a._2.toString + "/README")
+					val readme = if(readmeFile.exists) {
+						import eu.henkelmann.actuarius.ActuariusTransformer
+						val transformer = new ActuariusTransformer()
+						transformer(scala.io.Source.fromFile(readmeFile).mkString)
+					} else {
+						""
+					}
+					Play.boxes = new Play(a._2.getName, a._2, readme, "9050", "127.0.01") :: boxes
 				}
 				case None => {} 
 			}

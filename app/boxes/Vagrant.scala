@@ -1,22 +1,11 @@
 package boxes
 import java.io._
 
-class Vagrant(val name: String, val path: File, val id: String, val readme: String, val ip: String, var running: Boolean = false) {
+class Vagrant(override val name: String, override val path: File, val id: String, override val readme: String, override val ip: String) extends Box(name, path, readme, ip) {
 
 	override def toString(): String =  "Vagrant: " + name + " / Path: " + path 
 
-	val url = name + ".hydra"
-
-	def setHostEntry(on: Boolean) = {
-
-		if (on) {
-			general.Config.sudoWrite(s"""echo "\n$ip $url" >> /etc/hosts""")
-		} else {
-			general.Config.sudoWrite(s"""sed -i -e "/$ip $url/d" /etc/hosts""")
-		}
-	}
-
-	def start(out: OutputStream) = {		
+	override def start(out: OutputStream) = {		
 		import sys.process._
 		val pio = new ProcessIO(_ => (),
                         stdout => scala.io.Source.fromInputStream(stdout).getLines.foreach(a => {out.write(("\n" + a).getBytes); out.flush}),
@@ -29,7 +18,7 @@ class Vagrant(val name: String, val path: File, val id: String, val readme: Stri
 		setHostEntry(true)
 	}
 
-	def stop(out: OutputStream) = {		
+	override def stop(out: OutputStream) = {		
 				import sys.process._
 		val pio = new ProcessIO(_ => (),
                         stdout => scala.io.Source.fromInputStream(stdout).getLines.foreach(a => {out.write(("\n" + a).getBytes); out.flush}),
@@ -42,7 +31,7 @@ class Vagrant(val name: String, val path: File, val id: String, val readme: Stri
 		setHostEntry(false)
 	}
 
-	def restart(out: OutputStream) = {		
+	override def restart(out: OutputStream) = {		
 				import sys.process._
 		val pio = new ProcessIO(_ => (),
                         stdout => scala.io.Source.fromInputStream(stdout).getLines.foreach(a => {out.write(("\n" + a).getBytes); out.flush}),
@@ -52,6 +41,7 @@ class Vagrant(val name: String, val path: File, val id: String, val readme: Stri
 		val ret = (sys.process.Process(Seq( "vagrant", "reload" ), path) run pio).exitValue
 		out.write(LogStuff.bottom.getBytes)
 		out.close
+		true
 	}
 
 	def pause(out: OutputStream) = {		
@@ -130,10 +120,6 @@ object Vagrant {
 		})
 	}
 }
-
-
-object VagrantOrdering extends Ordering[Vagrant] { def compare(o1: Vagrant, o2: Vagrant) = if (o2.running && !o1.running) {1} else if (!o2.running && o1.running) {-1} else {0}}
-
 
 object LogStuff {
 	val top1 ="""<html><head><head><title>"""

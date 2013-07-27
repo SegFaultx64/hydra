@@ -8,23 +8,17 @@ import play.api.libs.iteratee._
 object Application extends Controller {
   
   def index = Action { implicit request =>
-    if(Vagrant.boxes.isEmpty) {
-      Vagrant.loadBoxes(new java.io.File(System.getProperty("user.home") + "/workspace/"))
+    if(Box.boxes.isEmpty) {
+      Box.loadBoxes(new java.io.File(System.getProperty("user.home") + "/workspace/"))
     }
 
-    if(boxes.Play.boxes.isEmpty) {
-      boxes.Play.loadBoxes(new java.io.File(System.getProperty("user.home") + "/workspace/"))
-    }
-
-    boxes.Play.getRunning;
-    Vagrant.getRunning;
-    Ok(views.html.index(Vagrant.boxes.sorted(VagrantOrdering), boxes.Play.boxes))
+    Box.getRunning;
+    Ok(views.html.index(Box.boxes.sorted(BoxOrdering)))
   }  
 
   def setPassword = Action(parse.urlFormEncoded) { implicit request =>
     // general.Config.password = pass
     general.Config.password = request.body("password")(0)
-    (new Play("devboxtest", new java.io.File("/"), "", "9000")).foward()
     Redirect("/").flashing(
       "success" -> "Set password!"
     )

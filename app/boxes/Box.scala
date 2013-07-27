@@ -26,6 +26,28 @@ object BoxOrdering extends Ordering[Box] { def compare(o1: Box, o2: Box) = if (o
 object Box {
 	var boxes: List[Box] = List empty
 
+	var seg1 = Random.nextInt(200)
+	var seg2 = Random.nextInt(200)
+	var seg3 = Random.nextInt(200)
+	var lastPort = 65000
+
+	def nextIp = {
+		if (seg3 > 254) {
+			seg3 = 0
+			seg2 = seg2 + 1
+			if (seg2 > 255) {
+				seg2 = 0
+				seg1 = seg1 + 1
+			}
+		}
+		s"10.$seg1.$seg2.$seg3"
+	}
+
+	def nextPort = {
+		lastPort = lastPort + 1
+		"" + lastPort
+	}
+
 	def loadBoxes(location: File) = {
 		Vagrant.loadBoxes(location);
 		Play.loadBoxes(location);

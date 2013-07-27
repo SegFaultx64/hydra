@@ -19,9 +19,14 @@ object Application extends Controller {
   def setPassword = Action(parse.urlFormEncoded) { implicit request =>
     // general.Config.password = pass
     general.Config.password = request.body("password")(0)
-    Redirect("/").flashing(
-      "success" -> "Set password!"
-    )
+    if (general.Config.testPassword) {
+      Redirect("/").flashing(
+        "success" -> "Set password!"
+      )
+    } else {
+      general.Config.password = ""
+      Redirect("/")
+    }
   }
 
   def start(box: String) = Action { implicit request =>

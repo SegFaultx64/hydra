@@ -84,13 +84,13 @@ object Vagrant {
 							val backup = new FileWriter((a._2.toString + "/VagrantFile.old"), true)
 							backup.write(vagrantConfig)
 							val fw = new FileWriter((a._2.toString + "/VagrantFile"), true)
-							fw.write("""
-								Vagrant.configure("2") do |config|
-									config.vm.network :private_network, ip: "192.168.33.100"
-								end
-							""")
+							val newIp = Box.nextIp
+							fw.write(s"""
+Vagrant.configure("2") do |config|
+	config.vm.network :private_network, ip: "$newIp"
+end""")
 							fw.close()
-							"192.168.33.100"
+							newIp
 						}
 					}
 					val readme = if(readmeFile.exists) {

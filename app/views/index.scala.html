@@ -43,7 +43,6 @@
                 } else {
                     <h2>@box.name</h2>
                 }
-
                 @if(box.isInstanceOf[boxes.Vagrant]) {
                     <h3>Located At: @box.path</h3>
                     Virtual Box Id: @box.asInstanceOf[boxes.Vagrant].id

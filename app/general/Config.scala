@@ -4,6 +4,22 @@ import java.io._
 object Config {
 	var password = ""
 
+	def testPassword() = {
+		try {
+			sudoWrite("echo passwordWorking >> /etc/hosts")
+			val hostFile = new File("/etc/hosts")
+			val hostFileContent = scala.io.Source.fromFile(hostFile).mkString
+			if (("passwordWorking".r).findAllIn(hostFileContent).length > 0) {
+				general.Config.sudoWrite(s"""sed -i -e "/passwordWorking/d" /etc/hosts""")
+				true
+			} else {
+				false
+			}
+		} catch {
+			case e: Exception => false
+		}
+	}
+
 	def sudoWrite(command: String) = {
 		import sys.process._
 

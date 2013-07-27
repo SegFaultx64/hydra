@@ -108,7 +108,8 @@ object Play {
 					} else {
 						""
 					}
-					Play.boxes = new Play(a._2.getName, a._2, readme, "9050", "127.0.01") :: boxes
+					val newPort = Box.nextPort
+					Play.boxes = new Play(a._2.getName, a._2, readme, newPort, "127.0.01") :: boxes
 				}
 				case None => {} 
 			}

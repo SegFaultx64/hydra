@@ -1,9 +1,6 @@
 @(boxx: List[boxes.Box])(implicit flash: Flash)
 
 @main("Welcome to Hydra Box") {
-	<div class="page-header">
-		<h1>Hydra Boxes</h1>
-	</div>
     @if(general.Config.password == "") {
         <div class="row">
             <div class="span10 offset1 well">

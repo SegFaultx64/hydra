@@ -26,9 +26,9 @@ object BoxOrdering extends Ordering[Box] { def compare(o1: Box, o2: Box) = if (o
 object Box {
 	var boxes: List[Box] = List empty
 
-	var seg1 = Random.nextInt(200)
-	var seg2 = Random.nextInt(200)
-	var seg3 = Random.nextInt(200)
+	var seg1 = util.Random.nextInt(200)
+	var seg2 = util.Random.nextInt(200)
+	var seg3 = util.Random.nextInt(200)
 	var lastPort = 65000
 
 	def nextIp = {

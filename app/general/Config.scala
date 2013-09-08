@@ -24,7 +24,7 @@ object Config {
 		import sys.process._
 
 		/*
-		This is an awful fucking solution to the fact that we need to acces the host file as root. Never ever do anything like this. If you do you are literally Hitler.
+		This is an awful solution to the fact that we need to access the host file as root. Never ever do anything like this.
 		Nothing sensible solves this problem so we had to do it the terrible way.
 		This is a list of other ways I tried to solve this:
 

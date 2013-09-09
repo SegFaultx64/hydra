@@ -30,8 +30,13 @@ object Application extends Controller {
   }
 
   def addProject = Action(parse.urlFormEncoded) { implicit request =>
-    val path = request.body("path")(0).toString
-    val lastPart = path.split("/").tail.toString
+    val HomePath = "~(.*)".r
+    val path = request.body("path")(0) match {
+      case HomePath(p) => System.getProperty("user.home") + p
+      case a           => a
+    }
+    
+    val lastPart = path.split("/").last
     import sys.process._
     sys.process.Process(Seq( "ln", "-s", path, lastPart), new java.io.File(System.getProperty("user.home") + "/hydra/")).run()
     Redirect("/").flashing(

@@ -3,34 +3,37 @@
 @main("Welcome to Hydra Box") {
     @if(general.Config.password == "") {
         <div class="row">
-            <div class="span10 offset1 well">
-                <div class="alert alert-error">
-                    You have not entered your password so the host file cannot be modified.
+            <div class="navbar">
+                <div class="navbar-inner">
+                    <span class="brand alert-error">You have not entered your password so the host file cannot be modified.</span>
+                    <ul class="nav pull-right">
+                        @helper.form(action = routes.Application.setPassword, 'class -> "navbar-form pull-right form-inline") {
+                            <input type="text" name="password" placeholder="Password">
+                            <input type="submit" name="submit" class="btn">
+                            
+                        }
+                    </ul>
                 </div>
-                @helper.form(action = routes.Application.setPassword, 'class -> "form-inline") {
-                    
-                    <label for="password">Password: </labe>
-                    <input type="password" name="password">
-                    <input type="submit" name="submit" class="btn">
-                    
-                }
             </div>
         </div>
     }
     <div class="row">
-        <div class="span10 offset1 well">
-            @helper.form(action = routes.Application.addProject, 'class -> "form-inline") {
-                
-                <label for="path">Path: </labe>
-                <input type="text" name="path">
-                <input type="submit" name="submit" class="btn">
-                
-            }
+        <div class="navbar">
+            <div class="navbar-inner">
+                <span class="brand">Add new project</span>
+                <ul class="nav pull-right">
+                    @helper.form(action = routes.Application.addProject, 'class -> "navbar-form pull-right form-inline") {
+                        <input type="text" name="path" placeholder="Path">
+                        <input type="submit" name="submit" class="btn">
+                        
+                    }
+                </ul>
+            </div>
         </div>
     </div>
     <div class="row">
         @for(box <- boxx) {    
-            <div class="well span12">
+            <div class="well span11">
                 <span class="status pull-right">
                     @if(box.running) {
                         <i class="icon-play huge"></i><br>

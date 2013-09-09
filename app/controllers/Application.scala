@@ -9,7 +9,7 @@ object Application extends Controller {
   
   def index = Action { implicit request =>
     if(Box.boxes.isEmpty) {
-      Box.loadBoxes(new java.io.File(System.getProperty("user.home") + "/workspace/"))
+      Box.loadBoxes(new java.io.File(System.getProperty("user.home") + "/hydra/"))
     }
 
     Box.getRunning;

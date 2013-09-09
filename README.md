@@ -1,4 +1,4 @@
-![Logo](http://i.imgur.com/yCMWsmt.jpg)
+![Logo](http://i.imgur.com/yCMWsmtl.jpg)
 =====================================
 
 ## What is it?

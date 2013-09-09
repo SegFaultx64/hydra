@@ -18,6 +18,17 @@
         </div>
     }
     <div class="row">
+        <div class="span10 offset1 well">
+            @helper.form(action = routes.Application.addProject, 'class -> "form-inline") {
+                
+                <label for="path">Path: </labe>
+                <input type="text" name="path">
+                <input type="submit" name="submit" class="btn">
+                
+            }
+        </div>
+    </div>
+    <div class="row">
         @for(box <- boxx) {    
             <div class="well span12">
                 <span class="status pull-right">

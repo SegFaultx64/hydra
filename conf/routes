@@ -5,6 +5,7 @@
 # Home page
 GET     /                           controllers.Application.index
 POST    /password					controllers.Application.setPassword
+POST    /project					controllers.Application.addProject
 GET     /start/:box                 controllers.Application.start(box: String)
 GET     /stop/:box                  controllers.Application.stop(box: String)
 GET     /restart/:box               controllers.Application.restart(box: String)

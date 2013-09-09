@@ -29,6 +29,16 @@ object Application extends Controller {
     }
   }
 
+  def addProject = Action(parse.urlFormEncoded) { implicit request =>
+    val path = request.body("path")(0).toString
+    val lastPart = path.split("/").tail.toString
+    import sys.process._
+    sys.process.Process(Seq( "ln", "-s", path, lastPart), new java.io.File(System.getProperty("user.home") + "/hydra/")).run()
+    Redirect("/").flashing(
+      "success" -> "Added project!"
+    )
+  }
+
   def start(box: String) = Action { implicit request =>
   	val enumerator = Enumerator.outputStream { os =>
 		Vagrant.boxes.find(a => a.name == box) match {

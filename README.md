@@ -1,4 +1,4 @@
-Hydra
+[Imgur](http://i.imgur.com/yCMWsmt.jpg)
 =====================================
 
 ## What is it?

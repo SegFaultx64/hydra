@@ -10,7 +10,7 @@ Hydra aims to solve these problems by creating a simple web interface to see you
 ## Software requirements
 
 * Mac OSX
-* JRE 6+
+* Java Runtime Enviorment 1.7_25+
 * Vagrant 1.2+
 * Virtual Box
 
